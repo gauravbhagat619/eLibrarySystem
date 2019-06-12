@@ -7,6 +7,7 @@ package com.ft.eLibrary.controller;
 
 
 import com.ft.eLibrary.service.LoginService;
+import com.google.gson.Gson;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -58,27 +61,55 @@ public class LoginController {
         }
     }
     
-    @RequestMapping(value="librarianLogin.htm",params="libr",method=RequestMethod.POST)
-    public String OnSubmit_LibrarianLoginForm(HttpServletRequest req,ModelMap map) throws ServletRequestBindingException{
-        String email=null,password=null;
-        
-        email=ServletRequestUtils.getStringParameter(req, "email");
-        password=ServletRequestUtils.getStringParameter(req,"password");
-        
-        int count=this.loginService.UserLogin(email, password);
-        System.out.println("======================count"+count);
-        if(count==1){
-            
-            return "/librarianPage";
-        }
-        else{
-             map.addAttribute("msg","Incorrect Email or Password");
-             return "/home";
-            
-        }
-        
-        
+    @RequestMapping(value="getLiberianDashboard.htm")
+    public String OnSubmit_LibrarianLoginForm(){
+        return "/librarianPage";
     }
+    
+//    @RequestMapping(value="librarianLogin.htm",params="libr",method=RequestMethod.POST)
+//    public String OnSubmit_LibrarianLoginForm(HttpServletRequest req,ModelMap map) throws ServletRequestBindingException{
+//        String email=null,password=null;
+//        
+//        email=ServletRequestUtils.getStringParameter(req, "email");
+//        password=ServletRequestUtils.getStringParameter(req,"password");
+//        
+//        int count=this.loginService.UserLogin(email, password);
+//        System.out.println("======================count"+count);
+//        if(count==1){
+//            
+//            return "/librarianPage";
+//        }
+//        else{
+//             map.addAttribute("msg","Incorrect Email or Password");
+//             return "/home";
+//            
+//        }
+//        
+//        
+//    }
+    
+    @RequestMapping(value="librarianLogin.htm")
+    @ResponseBody
+    public String OnSubmit_LibrarianLoginForm(@RequestParam(value = "email") String email,@RequestParam(value = "pass") String pass) {
+        
+        
+        int count=this.loginService.UserLogin(email, pass);
+        System.out.println("======================count"+count);
+        String msg;
+        if(count==1){
+            msg="Success";
+        }else{
+            msg="Fail";
+        }
+        
+        String json = null;
+        Gson gson = new Gson();
+        json = gson.toJson(msg);
+        System.out.println(json);
+        return json;
+   
+    }
+    
     
 }
 
